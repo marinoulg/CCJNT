@@ -5,9 +5,11 @@ tree -L 1
 
 ```
 .
+├── build
 ├── data
-├── data_larochelle_ecologiedatagouvfr.ipynb
-├── methode_ecologiedatagouvfr.py
+├── ecologiedatagouvfr_PCAET.egg-info
+├── method
+├── notebooks
 ├── params.py
 ├── __pycache__
 ├── README.md
