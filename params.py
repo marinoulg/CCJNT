@@ -1,7 +1,7 @@
 import os
 
 # ------------------ from .env------------------
-GITHUB_NAME = os.environ.get("GITHUB_NAME","")
+GITHUB_NAME = os.environ.get("GITHUB_NAME","marinoulg")
 if GITHUB_NAME == "":
     raise ValueError("GITHUB_NAME not found in .env")
 

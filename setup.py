@@ -5,7 +5,7 @@ with open("requirements.txt") as f:
     content = f.readlines()
 requirements = [x.strip() for x in content if "git+" not in x]
 
-setup(name='CCJNT_ecologiedatagouvfr_PCAET',
+setup(name='ecologiedatagouvfr_PCAET',
       version="0.0.1",
       description="""
       Les données saisies sur Territoires&Climat, dont les données des PCAET, sont disponibles sur la page Open Data du site Territoires&Climat et sur data.ademe.fr. Cet article présente les différents jeux de données disponibles et comment les utiliser.
@@ -25,7 +25,7 @@ from: https://www.territoires-climat.ademe.fr/actualite/comment-exploiter-les-do
       """,
       license="MIT",
       author_email="marine.le-gall@cerema.fr",
-      install_requires=requirements,
-      packages=find_packages(),
-      test_suite="tests"
+    #   install_requires=requirements,
+      packages=["method"],
+    #   test_suite="tests"
         )

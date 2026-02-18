@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: ecologiedatagouvfr_PCAET
+Version: 0.0.1
+Summary: Les données saisies sur Territoires&Climat, dont les données des PCAET, sont disponibles sur la page Open Data du site Territoires&Climat et sur data.ademe.fr. Cet article présente les différents jeux de données disponibles et comment les utiliser.
+Author-email: marine.le-gall@cerema.fr
+License: MIT
+Dynamic: author-email
+Dynamic: license
+Dynamic: summary

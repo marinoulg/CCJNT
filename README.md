@@ -1,6 +1,9 @@
 # Couche Carbone Jumeaux Numériques de Territoires
-
+```
 tree -L 1
+```
+
+```
 .
 ├── data
 ├── data_larochelle_ecologiedatagouvfr.ipynb
@@ -10,3 +13,4 @@ tree -L 1
 ├── README.md
 ├── requirements.txt
 └── setup.py
+```
