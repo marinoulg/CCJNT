@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 
-from ecologiedatagouvfr_PCAET.params import LOCAL_DATA_PATH
+# from ecologiedatagouvfr_PCAET.params import LOCAL_DATA_PATH
 from params import LOCAL_DATA_PATH
 
 # ------------------- Context - broad Information ---------------
