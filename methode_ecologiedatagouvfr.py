@@ -1,5 +1,8 @@
 import pandas as pd
 import numpy as np
+import os
+
+from params import LOCAL_DATA_PATH
 
 # ------------------- Context - broad Information ---------------
 """
@@ -59,12 +62,13 @@ to_be_mapped = [
             "valorisation_stockage",
         ]
 
-def load_data(csv="data_larochelle_ecologiedatagouvfr.csv",
+def load_data(csv="Demarches_PCAET_V2_PEC_SEQ.csv",
               nb_of_lines=2,
               idx_of_local_authority=1,
               local_authority_name = "La_Rochelle"):
 
-    df = pd.read_csv(csv, sep=";").iloc[:nb_of_lines,:]
+    csv_path = os.path.join(LOCAL_DATA_PATH,csv)
+    df = pd.read_csv(csv_path, sep=";").iloc[:nb_of_lines,:]
     larochelle = df.iloc[idx_of_local_authority-1:idx_of_local_authority,:].T.rename(columns={idx_of_local_authority-1:f"{local_authority_name}"})
     return larochelle
 
@@ -624,6 +628,7 @@ def merge_all(local_authority_name="La_Rochelle",
             nb_of_lines=2,
             idx_of_local_authority=1,
             ):
+
     # PEC SEQ
     larochelle_pec_seq = load_data(csv="Demarches_PCAET_V2_PEC_SEQ.csv",
           nb_of_lines=nb_of_lines,
