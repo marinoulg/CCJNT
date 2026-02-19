@@ -10,9 +10,11 @@ tree -L 1
 ├── ecologiedatagouvfr_PCAET.egg-info
 ├── method
 ├── notebooks
-├── params.py
+├── outputs
+├── pptx
 ├── __pycache__
 ├── README.md
 ├── requirements.txt
-└── setup.py
+├── setup.py
+└── tests
 ```
