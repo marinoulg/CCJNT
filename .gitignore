@@ -3,3 +3,4 @@ __pycache*
 ecologiedatagouvfr_PCAET.egg-info/*
 *.ipynb
 notebooks/*
+outputs/*

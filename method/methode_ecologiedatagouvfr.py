@@ -1,8 +1,9 @@
 import pandas as pd
 import numpy as np
 import os
+import matplotlib.pyplot as plt
 
-from method.params import LOCAL_DATA_PATH
+from method.params import LOCAL_DATA_PATH, LOCAL_PATH_OUTPUTS
 
 # ------------------- Context - broad Information ---------------
 """
@@ -54,12 +55,19 @@ to_be_mapped = [
             "TOTAL_POL",
             "PEC_GES",
             "PEC_CONSO",
-            "SEQ",
+            "PEC_SEQ",
             "Diag_Annee_Compta",
-            "Production",
-            "Consommation",
-            "valorisation_recuperation",
-            "valorisation_stockage",
+            "Production_ENR",
+            "Consommation_ENR",
+            "valorisation_recuperation_ENR",
+            "valorisation_stockage_ENR",
+        ]
+
+steps = [
+            "Diagnostic",
+            "2026",
+            "2030",
+            "2050"
         ]
 
 def load_data(csv="Demarches_PCAET_V2_PEC_SEQ.csv",
@@ -148,7 +156,7 @@ def which_cols_and_indexes(df_consolidated,
                 indexes_i_want.append(idx)
 
         tmp = tmp_df.iloc[indexes_i_want,:].set_index("index")
-        tmp = tmp[tmp.loc[:,:]!=False].dropna(axis="index", how="all").dropna(axis="columns", how="all").replace(np.nan, "")
+        tmp = tmp[tmp.loc[:,:]!=False].dropna(axis="index", how="all").dropna(axis="columns", how="all").replace(np.nan, "").infer_objects(copy=False)
         if tmp.shape[1] != len(cols):
             for elem in cols:
                 for col in tmp.columns:
@@ -283,7 +291,7 @@ def new_mapping(larochelle):
     # Profil Energie Climat - Vulnérabilité
 
     # Profil Energie Climat - Séquestration
-    larochelle["SEQ"] = seq
+    larochelle["PEC_SEQ"] = seq
 
     # Profil Energie Climat - Objectifs de renforcements de la séquestration
 
@@ -502,16 +510,16 @@ def new_mapping_ENR(larochelle):
     larochelle["Diag_Annee_Compta"] = diag_compta
 
     # ENR _ Production
-    larochelle["Production"] = enr_prod
+    larochelle["Production_ENR"] = enr_prod
 
     # ENR _ Consommation
-    larochelle["Consommation"] = enr_conso
+    larochelle["Consommation_ENR"] = enr_conso
 
     # ENR _ Valorisation_Recupération
-    larochelle["valorisation_recuperation"] = enr_valo_recup
+    larochelle["valorisation_recuperation_ENR"] = enr_valo_recup
 
     # ENR _ Valorisation_Stockage
-    larochelle["valorisation_stockage"] = enr_valo_stock
+    larochelle["valorisation_stockage_ENR"] = enr_valo_stock
 
     return larochelle
 
@@ -654,6 +662,101 @@ def merge_all(local_authority_name="La_Rochelle",
     larochelle = pd.concat([larochelle_pec_seq,larochelle_enr, larochelle_pol])
     return larochelle
 
+
+
+# ---------------------- GRAPH ----------------
+
+def get_cols_across_time(df_consolidated,
+                           col,
+                           steps = [
+                                    "Diagnostic",
+                                    "2026",
+                                    "2030",
+                                    "2050"
+                                ]):
+    my_dict = {}
+    for step in steps:
+        # print(step+":")
+        tmp = which_cols_and_indexes(df_consolidated=df_consolidated,
+                            cols=[col],
+                            according_to=step)
+        # print(tmp[tmp[col] != 'False'])
+        # print()
+        my_dict[step] = (tmp[tmp[col] != 'False']).to_dict()[col]
+
+    return my_dict
+
+def return_merged_df(larochelle,col,steps):
+    values = get_cols_across_time(larochelle,col)
+    df = pd.DataFrame.from_dict(values)
+
+    new_index = []
+    for elem in pd.DataFrame.from_dict(values).index:
+        for step in steps:
+            if step in elem:
+                elem = elem.replace("_"+step,"")
+        new_index.append(elem)
+
+    df.index = new_index
+    df = df.reset_index().rename(columns={'index': 'Categories'})
+    df = df.replace(np.nan,False).infer_objects(copy=False)
+
+
+    def get_separation_df_per_year(index, df,year):
+        for i in range(index, df.shape[0]):
+            if df.iloc[i,year] == False:
+                return i
+
+    merged = pd.DataFrame()
+    old_index = 0
+
+    for year in range(1,5):
+        index = get_separation_df_per_year(old_index,df, year=year)
+        df_tmp = df.iloc[old_index:index,:]
+        df_tmp = df_tmp.replace(False,np.nan).infer_objects(copy=False)
+        df_tmp = df_tmp.dropna(axis=1, how="all").set_index("Categories")
+        if index == None:
+            index = df.shape[0]+1
+            merged =  pd.concat([merged, df_tmp], axis=1)
+            break
+        old_index = index
+
+        if year == 1:
+            merged = df_tmp
+        else:
+            merged = (pd.merge(left=merged,right=df_tmp, on=df_tmp.index)).rename(columns={"key_0":"Categories"}).set_index("Categories")
+
+    return merged
+
+def graph_col_between_steps_for_df(col, df, merged, steps=steps):
+    fig, ax = plt.subplots()
+
+    LOCAL_OUTPUTS_TERRITORY = os.path.join(LOCAL_PATH_OUTPUTS, df.columns[0].lower())
+    LOCAL_OUTPUTS_COL = os.path.join(LOCAL_OUTPUTS_TERRITORY, col)
+
+    # Use os.makedirs to create all necessary parent directories
+    os.makedirs(LOCAL_OUTPUTS_COL, exist_ok=True)
+
+    for step in steps:
+        try:
+            float_list = [float(x) if isinstance(x, str) else x for x in merged[step].tolist()]
+            ax.plot(merged.index, float_list, label=step)
+            ax.set_xticks(range(len(merged.index)))
+            ax.set_xticklabels(merged.index, rotation=90)
+
+            ax.legend()
+            ax.set_title(f"{col} between {steps[0]} and {step} for {df.columns[0].replace('_', ' ')}")
+        except KeyError:
+            continue
+    fig.savefig(os.path.join(LOCAL_OUTPUTS_COL,f"{col} between {steps[0]} and {step} for {df.columns[0].replace('_', ' ')}"),
+                bbox_inches='tight',
+                dpi=300  # Higher DPI for better quality
+                )
+
+    plt.close(fig)
+    return fig
+
+# ---------------------- if__name=="__main__" ----------------
 if __name__ == "__main__":
     valenciennes = merge_all(local_authority_name="Valenciennes",
             nb_of_lines=2,
