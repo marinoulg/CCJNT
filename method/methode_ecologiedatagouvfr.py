@@ -2,8 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 
-# from ecologiedatagouvfr_PCAET.params import LOCAL_DATA_PATH
-from params import LOCAL_DATA_PATH
+from method.params import LOCAL_DATA_PATH
 
 # ------------------- Context - broad Information ---------------
 """
@@ -654,3 +653,9 @@ def merge_all(local_authority_name="La_Rochelle",
     # Merge all
     larochelle = pd.concat([larochelle_pec_seq,larochelle_enr, larochelle_pol])
     return larochelle
+
+if __name__ == "__main__":
+    valenciennes = merge_all(local_authority_name="Valenciennes",
+            nb_of_lines=2,
+            idx_of_local_authority=2)
+    print(valenciennes)

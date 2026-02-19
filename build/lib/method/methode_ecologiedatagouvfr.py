@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 
-from params import LOCAL_DATA_PATH
+from method.params import LOCAL_DATA_PATH
 
 # ------------------- Context - broad Information ---------------
 """
