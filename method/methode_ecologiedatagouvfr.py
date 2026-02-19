@@ -5,14 +5,8 @@ import matplotlib.pyplot as plt
 
 from method.params import LOCAL_DATA_PATH, LOCAL_PATH_OUTPUTS
 
-# ------------------- Context - broad Information ---------------
-"""
-Les fichiers « Démarches PCAET [V1 ou V2] ENTETE » comprennent les informations
-générales sur les PCAET : collectivité porteuse, dates, état d’avancement,
-description…
-"""
+# ------------------- Main variables - lists --------------------
 
-# ---------------------- Generic functions ----------------------
 to_be_mapped = [
             "Diagnostic",
             "2026",
@@ -70,6 +64,49 @@ steps = [
             "2050"
         ]
 
+possibilities = [
+    "GES",
+    "ommentaire", # "commentaire" vs. "Commentaire"
+    "mission", # "emission" vs. "Emission"
+    "Domaine",
+    "Vulnerabilite",
+    "SEQ",
+    "CONSO",
+    "Vegetation",
+    "Sols",
+    "bjectif", # "objectif" vs. "Objectif"
+    "ENR",
+    "POL",
+    "date_creation",
+    "date_modification",
+    "date_lancement",
+    "type_demarche",
+    "nom",
+    "description_rapide",
+    "collectivites_coporteuses",
+    "population_couverte",
+    "demarche_etat",
+    "Chef_de_projet",
+    "Contact",
+    "elu_referent",
+    "commentaire_statut",
+    "date_reception_projet",
+    "date_envoi_avis_dreal",
+    "date_envoi_avis_cr",
+    "oblige",
+    "Autres_démarches_hors_EC",
+    "Autres_démarches",
+    "PEC"
+]
+
+# ------------------- Context - broad Information ---------------
+"""
+Les fichiers « Démarches PCAET [V1 ou V2] ENTETE » comprennent les informations
+générales sur les PCAET : collectivité porteuse, dates, état d’avancement,
+description…
+"""
+
+# ---------------------- Generic functions ----------------------
 def load_data(csv="Demarches_PCAET_V2_PEC_SEQ.csv",
               nb_of_lines=2,
               idx_of_local_authority=1,
@@ -630,7 +667,7 @@ def new_mapping_POL(larochelle):
 
     return larochelle
 
-# ---------------------- MERGE ALL ------------
+# --------------------------- MERGE ALL -------------------------
 
 def merge_all(local_authority_name="La_Rochelle",
             nb_of_lines=2,
@@ -662,9 +699,7 @@ def merge_all(local_authority_name="La_Rochelle",
     larochelle = pd.concat([larochelle_pec_seq,larochelle_enr, larochelle_pol])
     return larochelle
 
-
-
-# ---------------------- GRAPH ----------------
+# --------------------------- GRAPH -----------------------------
 
 def get_cols_across_time(df_consolidated,
                            col,
@@ -748,6 +783,7 @@ def graph_col_between_steps_for_df(col, df, merged, steps=steps):
             ax.set_title(f"{col} between {steps[0]} and {step} for {df.columns[0].replace('_', ' ')}")
         except KeyError:
             continue
+    merged.to_csv(os.path.join(LOCAL_OUTPUTS_COL,f"merged_table_for_{col}_for_{df.columns[0].replace('_', ' ')}.csv"), sep=";")
     fig.savefig(os.path.join(LOCAL_OUTPUTS_COL,f"{col} between {steps[0]} and {step} for {df.columns[0].replace('_', ' ')}"),
                 bbox_inches='tight',
                 dpi=300  # Higher DPI for better quality
@@ -756,7 +792,9 @@ def graph_col_between_steps_for_df(col, df, merged, steps=steps):
     plt.close(fig)
     return fig
 
-# ---------------------- if__name=="__main__" ----------------
+
+
+# ---------------------- if__name=="__main__" -------------------
 if __name__ == "__main__":
     valenciennes = merge_all(local_authority_name="Valenciennes",
             nb_of_lines=2,

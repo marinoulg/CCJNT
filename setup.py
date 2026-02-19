@@ -25,7 +25,7 @@ from: https://www.territoires-climat.ademe.fr/actualite/comment-exploiter-les-do
       """,
       license="MIT",
       author_email="marine.le-gall@cerema.fr",
-    #   install_requires=requirements,
+      install_requires=requirements,
       packages=["method"],
     #   test_suite="tests"
         )
