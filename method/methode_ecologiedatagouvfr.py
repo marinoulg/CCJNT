@@ -167,7 +167,7 @@ def which_cols_and_indexes(df_consolidated,
         cols = df_consolidated.columns
         return tmp_what_to_do_with_cols(df_consolidated,
                            according_to,
-                           cols)
+                           cols).iloc[:,1:]
 
 # ---------------------- Demarches_PCAET_V2_PEC_SEQ -------------
 """
@@ -658,4 +658,9 @@ if __name__ == "__main__":
     valenciennes = merge_all(local_authority_name="Valenciennes",
             nb_of_lines=2,
             idx_of_local_authority=2)
-    print(valenciennes)
+    valenciennes.to_csv(path_or_buf=os.path.join(LOCAL_DATA_PATH,"valenciennes.csv"), sep=';')
+
+    larochelle = merge_all(local_authority_name="La_Rochelle",
+            nb_of_lines=2,
+            idx_of_local_authority=1)
+    larochelle.to_csv(path_or_buf=os.path.join(LOCAL_DATA_PATH,"larochelle.csv"), sep=';')

@@ -2,3 +2,4 @@ __pycache*
 *.csv
 ecologiedatagouvfr_PCAET.egg-info/*
 *.ipynb
+notebooks/*
