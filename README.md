@@ -40,16 +40,33 @@ tree -L 1
 
 ```
 .
-├── build
 ├── data
-├── ecologiedatagouvfr_PCAET.egg-info
+│   ├── community.csv
+│   └── (...).csv
 ├── method
+│   ├── __init__.py
+│   ├── methode_ecologiedatagouvfr.py
+│   └── params.py
 ├── notebooks
 ├── outputs
+│   └── community
+│       ├── Agriculture
+│       ├── Chaleur(en GWh)
+│       ├── Consommation_ENR
+│       ├── Géothermie
+│       ├── Industrie_hors_branche_énergie
+│       ├── PEC_CONSO
+│       ├── Résidentiel
+│       ├── Solaire_photovoltaïque
+│       ├── Solaire_thermique
+│       ├── (...)
+│       └── Tertiaire
 ├── pptx
-├── __pycache__
+│   └── community
+│       └── community.pptx
 ├── README.md
 ├── requirements.txt
 ├── setup.py
 └── tests
+    └── test_merge_all.py
 ```

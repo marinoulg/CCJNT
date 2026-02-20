@@ -1,1 +1,6 @@
 python-pptx
+pandas
+numpy
+matplotlib
+datetime
+setuptools
