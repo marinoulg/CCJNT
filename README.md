@@ -19,11 +19,11 @@ pip install -e .
 
 
 ## STEP 1: Gather data
-from [Teritoires Climats Ademe]("https://www.territoires-climat.ademe.fr/opendata#_blank) and create your own csv as input data.
+From [Teritoires Climats Ademe]("https://www.territoires-climat.ademe.fr/opendata#_blank), create your own csv as input data.
 
 
 ## STEP 2: Run ```python method/methode_ecologiedatagouvfr.py```
-This command allow the user to create the consolidated community's csv, and the outputs (e.g. merged table for the Category for the community, and the diagram in .png format associated to this csv).
+This command allows the user to create the consolidated community's csv, and the outputs (e.g. merged table for the Category for the community, and the diagram in .png format associated to this csv).
 
 ## STEP 3: Create automatic PowerPoint presentations
 By running:
