@@ -15,20 +15,25 @@ def title_page(ppt, title, heading, subheading):
     page.shapes.title.text = heading
     page.placeholders[1].text = subheading
 
-def content_page(ppt, content, heading, slide, img=None, subheading_df=None):
-    page = ppt.slides.add_slide(content)
+def content_page(ppt,
+                 content,
+                 slide,
+                 page,
+                 heading=None,
+                 img=None,
+                 subheading_df=None):
 
     # Split heading into max 2 lines
-    if len(heading) > 50:  # Adjust the threshold as needed
-        # Split into two lines (you can use a more sophisticated split if needed)
-        middle = len(heading)//2
-        space = heading.find(" ", middle)
-        heading_line1 = heading[:space]
-        heading_line2 = heading[space + 1:]
+    if heading:
+        if len(heading) > 50:
+            middle = len(heading)//2
+            space = heading.find(" ", middle)
+            heading_line1 = heading[:space]
+            heading_line2 = heading[space + 1:]
 
-        page.shapes.title.text = f"{heading_line1}\n{heading_line2}"
-    else:
-        page.shapes.title.text = heading
+            page.shapes.title.text = f"{heading_line1}\n{heading_line2}"
+        else:
+            page.shapes.title.text = heading
 
     # Optionally, set a smaller font size for the title to ensure it fits
     for paragraph in page.shapes.title.text_frame.paragraphs:
@@ -124,7 +129,7 @@ if __name__ == "__main__":
     title = ppt.slide_layouts[0]
     content = ppt.slide_layouts[1]
 
-    quelle_commune = os.path.join(LOCAL_PATH_OUTPUTS,"la_rochelle")
+    quelle_commune = os.path.join(LOCAL_PATH_OUTPUTS,"valenciennes")
 
     heading = quelle_commune.split("/")[-1].replace("_", " ").title()
     title_page(ppt, title, heading, f"created by Marine on {date.today()}\n for Cerema - CCJNT")
@@ -134,39 +139,53 @@ if __name__ == "__main__":
         df.rename(columns={num_col:title_col}, inplace=True)
     df = df.drop(index=2).reset_index().drop(columns=["index"])
 
-    content_page(ppt, slide=1, content=content, heading="General information", subheading_df=df)
+    content_page(ppt,
+                 slide=1,
+                 content=content,
+                 page= ppt.slides.add_slide(content),
+                 heading="General information",
+                 subheading_df=df)
     slide = 2
-    for elem in os.listdir(quelle_commune):
-        for img in os.listdir(os.path.join(quelle_commune,elem)):
-            if img.endswith(".png"):
-                # print(elem, os.listdir(os.path.join(quelle_commune,elem)))
-                img_path,img_title = get_1_img(img_png_name=img, elem=elem, OUTPUTS_TERRITORY=quelle_commune)
-                print(img)
-                """
-                Comprendre pourquoi parfois j'ai des images en doubles,
-                mais avec un tableau à droite différent en plus
-                (ou au moins, pas dans le même ordre)
-                """
-            if img.endswith(".csv"):
-                merged = pd.read_csv(os.path.join(quelle_commune,elem,img), sep=";").set_index("Categories")
-                tmp_df = create_df_for_information(merged, possibilities)
-                """
-                Quand on parle de "Diagnostic" dans merged,
-                dire de quand date le diagnostic en le rajoutant
-                en format subtext
-                """
-                print(img_path)
+    for directory in os.listdir(os.path.join(LOCAL_PATH_REPO, "outputs", quelle_commune)):
+        print(directory)
+        page = ppt.slides.add_slide(content)
+        for file in os.listdir(os.path.join(LOCAL_PATH_REPO, "outputs", quelle_commune, directory)):
+            print(file)
+            img_path, img_title = None, None
+            tmp_df = None
 
-
-            content_page(ppt, content,
+            if file.endswith(".png"):
+                img_path, img_title = get_1_img(img_png_name=file, elem=directory, OUTPUTS_TERRITORY=quelle_commune)
+                print("img:", slide)
+                content_page(ppt,
+                            content,
+                            page=page,
                             slide=slide,
                             img=img_path,
                             heading=img_title,
                             # subheading_df=tmp_df
                             )
 
-            slide+=1
+            if file.endswith(".csv"):
+                merged = pd.read_csv(os.path.join(quelle_commune, directory, file), sep=";").set_index("Categories")
+                tmp_df = create_df_for_information(merged, possibilities)
+                print("csv:", slide)
+                print(os.listdir(os.path.join(quelle_commune, directory)))
+                content_page(ppt,
+                            content,
+                            page=page,
+                            slide=slide,
+                            # img=img_path,
+                            heading=[img_title if img_path is not None else directory][0],
+                            subheading_df=tmp_df,
+                            )
+        slide += 1  # Increment slide only once per file
+        print()
 
-    ppt.save(os.path.join(LOCAL_PATH_REPO,"pptx",f"{heading}.pptx"))
+    path_created = os.path.join(LOCAL_PATH_REPO,"pptx",quelle_commune)
+    print("path: ",path_created)
+
+    os.makedirs(path_created, exist_ok=True)
+    ppt.save(os.path.join(path_created, f"{heading}.pptx"))
 
     print("Complete")

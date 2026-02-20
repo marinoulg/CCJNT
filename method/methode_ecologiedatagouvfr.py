@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 
 from method.params import LOCAL_DATA_PATH, LOCAL_PATH_OUTPUTS
 
-# ------------------- Main variables - lists --------------------
+pd.set_option('future.no_silent_downcasting', True)
+# ------------------- Main variables - lists/dicts --------------
 
 to_be_mapped = [
             "Diagnostic",
@@ -99,6 +100,16 @@ possibilities = [
     "PEC"
 ]
 
+communities = {
+        "Valenciennes":{
+            "idx_of_local_authority":2
+                        },
+
+        "La_Rochelle":{
+            "idx_of_local_authority":1
+                    }
+                }
+
 # ------------------- Context - broad Information ---------------
 """
 Les fichiers « Démarches PCAET [V1 ou V2] ENTETE » comprennent les informations
@@ -179,12 +190,14 @@ def which_category(cat, larochelle,columns=None):
 def which_cols_and_indexes(df_consolidated,
                            according_to:str,
                            cols=None,
+                           print_=False,
                            ):
     """
     """
     def tmp_what_to_do_with_cols(df_consolidated,
                            according_to:str,
-                           cols):
+                           cols,
+                           print_=False):
         tmp_df = df_consolidated[cols].reset_index()
         indexes_i_want = []
 
@@ -200,7 +213,8 @@ def which_cols_and_indexes(df_consolidated,
                     if elem == col:
                         break
                 else:
-                    print(f'{elem} is not in the columns anymore because the column was empty.')
+                    if print_:
+                        print(f'{elem} is not in the columns anymore because the column was empty.')
 
         return tmp
 
@@ -714,7 +728,8 @@ def get_cols_across_time(df_consolidated,
         # print(step+":")
         tmp = which_cols_and_indexes(df_consolidated=df_consolidated,
                             cols=[col],
-                            according_to=step)
+                            according_to=step,
+                            print_=False)
         # print(tmp[tmp[col] != 'False'])
         # print()
         my_dict[step] = (tmp[tmp[col] != 'False']).to_dict()[col]
@@ -768,6 +783,8 @@ def graph_col_between_steps_for_df(col, df, merged, steps=steps):
 
     LOCAL_OUTPUTS_TERRITORY = os.path.join(LOCAL_PATH_OUTPUTS, df.columns[0].lower())
     LOCAL_OUTPUTS_COL = os.path.join(LOCAL_OUTPUTS_TERRITORY, col)
+    print("LOCAL_OUTPUTS_COL:", LOCAL_OUTPUTS_COL)
+    print("LOCAL_OUTPUTS_TERRITORY:", LOCAL_OUTPUTS_TERRITORY)
 
     # Use os.makedirs to create all necessary parent directories
     os.makedirs(LOCAL_OUTPUTS_COL, exist_ok=True)
@@ -792,16 +809,35 @@ def graph_col_between_steps_for_df(col, df, merged, steps=steps):
     plt.close(fig)
     return fig
 
-
+def get_outputs(df_community,
+                steps=steps,
+                print_=False):
+    for col in df_community.columns.tolist()[5:]:
+        try:
+            if print_: print(col, end=":")
+            graph_col_between_steps_for_df(col,
+                                    df_community,
+                                    return_merged_df(df_community,col,steps),
+                                    steps=steps
+                                    )
+            if print_: print(col+" done")
+        except KeyError:
+            next
+        except ValueError:
+            next
 
 # ---------------------- if__name=="__main__" -------------------
 if __name__ == "__main__":
-    valenciennes = merge_all(local_authority_name="Valenciennes",
-            nb_of_lines=2,
-            idx_of_local_authority=2)
-    valenciennes.to_csv(path_or_buf=os.path.join(LOCAL_DATA_PATH,"valenciennes.csv"), sep=';')
+    # Create consolidated csv for each community
+    for community in communities:
+        community_df = merge_all(local_authority_name=community,
+                nb_of_lines=2,
+                idx_of_local_authority=communities[community]["idx_of_local_authority"])
+        community_df.to_csv(path_or_buf=os.path.join(LOCAL_DATA_PATH,f"{community}.csv"), sep=';')
+        print(f"{community} csv done.")
 
-    larochelle = merge_all(local_authority_name="La_Rochelle",
-            nb_of_lines=2,
-            idx_of_local_authority=1)
-    larochelle.to_csv(path_or_buf=os.path.join(LOCAL_DATA_PATH,"larochelle.csv"), sep=';')
+        # Get outputs
+        get_outputs(community_df, steps=steps,
+                    # print_=True
+                    )
+        print(f"Ouputs created for {community}.")
