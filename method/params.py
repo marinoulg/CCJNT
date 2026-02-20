@@ -25,6 +25,12 @@ PCAET_DATA = os.path.join(PCAET_DIR,"data")
 PCAET_V1_DATA = os.path.join(PCAET_DATA,"PCAET_V1")
 PCAET_V2_DATA = os.path.join(PCAET_DATA,"PCAET_V2")
 
+DEMARCHES = os.path.join(PCAET_DIR, "Demarches")
+DEMARCHES_PCAET_V1 = os.path.join(DEMARCHES, "PCAET_V1")
+DEMARCHES_PCAET_V2 = os.path.join(DEMARCHES, "PCAET_V2")
+
+PATH_DATA_WIP = os.path.join(PCAET_DIR, "WIP")
+
 COMMUNITIES_WIP = [
     "La Rochelle",
     "Valenciennes",
