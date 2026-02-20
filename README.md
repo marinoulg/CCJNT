@@ -104,7 +104,7 @@ The following ```tree``` is indicative of how the package is structured, as it m
     └── test_merge_all.py
 ```
 ## To-do
-- Ajuster les chemins pour que le ```main()``` de ```main.py``` fonctionne encore maintenant que j'ai rajouté des directories dans ```data```
+- Dans ```merge_all``` dans ```method/methode_ecologiedatagouvfr.py``` : à corriger : choix des csv encore fait à la mano + manque le mapping des entete (si besoin?)
 - Quand on parle de "Diagnostic" dans merged, dire de quand date le diagnostic en le rajoutant en format subtext
 - Quand je rajoute le tableau à droite de chaque slide avec les infos, trier ces infos pour n'afficher que les relevant ones
 - Corriger les titres des slides, parfois c'est le nom du directory, parfois le titre du graphe --> homogénéiser
@@ -112,6 +112,7 @@ The following ```tree``` is indicative of how the package is structured, as it m
 - Comprendre pourquoi le lien de l'Ademe dans mon ```README.md``` n'apparaît pas
 
 ## Done
+- A PRIORI : Ajuster les chemins pour que le ```main()``` de ```main.py``` fonctionne encore maintenant que j'ai rajouté des directories dans ```data```
 - Comprendre pourquoi parfois j'ai des images en doubles, mais avec un tableau à droite différent en plus (ou au moins, pas dans le même ordre)
 - Correct problem outputs - ça fonctionne dans le notebook
 - Correct where the ```.pptx``` presentations are saved
