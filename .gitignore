@@ -5,3 +5,5 @@ ecologiedatagouvfr_PCAET.egg-info/*
 notebooks/*
 outputs/*
 *.pptx
+*.csv
+*.json
