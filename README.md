@@ -34,14 +34,38 @@ This command will:
 
 ## Overview of the project's architecture
 ```
-tree -L 1
+tree # this is indicative of how the package is structured, as it might help others to understand it and how it works
 ```
 
 ```
 .
 ├── data
 │   ├── community.csv
-│   └── Demarche_(...).csv
+│   ├── PCAETs
+│   │   ├── data
+│   │   │   ├── PCAET_V1
+│   │   │   │   ├── PCAET_V1_enr.csv
+│   │   │   │   ├── PCAET_V1_entete.csv
+│   │   │   │   ├── PCAET_V1_pec_seq.csv
+│   │   │   │   └── PCAET_V1_polluant.csv
+│   │   │   └── PCAET_V2
+│   │   │       ├── PCAET_V2_enr.csv
+│   │   │       ├── PCAET_V2_entete.csv
+│   │   │       ├── PCAET_V2_pec_seq.csv
+│   │   │       └── PCAET_V2_polluant.csv
+│   │   ├── data_ademe.md
+│   │   ├── Demarches
+│   │   │   ├── (...).CSV # all generic files about Demarches
+│   │   │   ├── PCAET_V1
+│   │   │   │   ├── (...) # all files in PCAET_V1 about Demarches
+│   │   │   │   └── Demarches_PCAET_V1_polluant.csv
+│   │   │   └── PCAET_V2
+│   │   │       ├── (...) # all files in PCAET_V2 about Demarches
+│   │   │       └── Demarches_PCAET_V2_polluant.csv
+│   │   └── WIP
+│   │       ├── (...) # all csv_files computed from the preprocessing
+│   │       └── PCAET_V2_polluant.csv
+│   └── valenciennes.csv
 ├── method
 │   ├── __init__.py
 │   ├── clean_data.py
@@ -51,6 +75,8 @@ tree -L 1
 ├── outputs
 │   └── community
 │       ├── Agriculture
+│   │   │   ├── Agriculture between Diagnostic and 2050 for La Rochelle.png # this is an example
+│   │   │   └── merged_table_for_Agriculture_for_La Rochelle.csv # this is an example
 │       ├── Chaleur(en GWh)
 │       ├── Consommation_ENR
 │       ├── Géothermie
@@ -62,8 +88,13 @@ tree -L 1
 │       ├── (...)
 │       └── Tertiaire
 ├── pptx_dir
-│   └── community
-│       └── community.pptx
+│   ├── __init__.py
+│   ├── community
+│   │   └── community.pptx
+│   └── presentation.py
+├── preproc
+│   ├── __init__.py
+│   └── preprocessing_data_ademe_PCAET.py
 ├── README.md
 ├── requirements.txt
 ├── setup.py
@@ -73,6 +104,7 @@ tree -L 1
     └── test_merge_all.py
 ```
 ## To-do
+- Ajuster les chemins pour que le ```main()``` de ```main.py``` fonctionne encore maintenant que j'ai rajouté des directories dans ```data```
 - Quand on parle de "Diagnostic" dans merged, dire de quand date le diagnostic en le rajoutant en format subtext
 - Quand je rajoute le tableau à droite de chaque slide avec les infos, trier ces infos pour n'afficher que les relevant ones
 - Corriger les titres des slides, parfois c'est le nom du directory, parfois le titre du graphe --> homogénéiser
