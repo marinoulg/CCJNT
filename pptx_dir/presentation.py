@@ -123,13 +123,13 @@ def create_df_for_information(merged, possibilities):
             df = pd.concat([df, df_new], axis=0)
     return df
 
-
-if __name__ == "__main__":
+def main_presentation(community):
+    community = community.lower()
     ppt = Presentation()
     title = ppt.slide_layouts[0]
     content = ppt.slide_layouts[1]
 
-    quelle_commune = os.path.join(LOCAL_PATH_OUTPUTS,"valenciennes")
+    quelle_commune = os.path.join(LOCAL_PATH_OUTPUTS,community)
 
     heading = quelle_commune.split("/")[-1].replace("_", " ").title()
     title_page(ppt, title, heading, f"created by Marine on {date.today()}\n for Cerema - CCJNT")
@@ -146,10 +146,10 @@ if __name__ == "__main__":
                  heading="General information",
                  subheading_df=df)
     slide = 2
-    for directory in os.listdir(os.path.join(LOCAL_PATH_REPO, "outputs", quelle_commune)):
+    for directory in os.listdir(os.path.join(LOCAL_PATH_REPO, "outputs", community)):
         print(directory)
         page = ppt.slides.add_slide(content)
-        for file in os.listdir(os.path.join(LOCAL_PATH_REPO, "outputs", quelle_commune, directory)):
+        for file in os.listdir(os.path.join(LOCAL_PATH_REPO, "outputs", community, directory)):
             print(file)
             img_path, img_title = None, None
             tmp_df = None
@@ -187,10 +187,14 @@ if __name__ == "__main__":
         slide += 1  # Increment slide only once per file
         print()
 
-    path_created = os.path.join(LOCAL_PATH_REPO,"pptx",quelle_commune)
+    print("LOCAL_PATH_REPO:", LOCAL_PATH_REPO)
+    path_created = os.path.join(LOCAL_PATH_REPO,"pptx_dir",community)
     print("path: ",path_created)
 
     os.makedirs(path_created, exist_ok=True)
     ppt.save(os.path.join(path_created, f"{heading}.pptx"))
 
     print("Complete")
+
+if __name__ == "__main__":
+    main_presentation()

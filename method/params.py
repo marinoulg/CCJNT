@@ -20,8 +20,20 @@ LOCAL_PATH_REPO = os.path.join(os.path.expanduser('~'),"code", GITHUB_NAME,"couc
 LOCAL_DATA_PATH = os.path.join(LOCAL_PATH_REPO,"data")
 LOCAL_PATH_OUTPUTS = os.path.join(LOCAL_PATH_REPO,"outputs")
 
-OUTPUTS_LAROCHELLE = os.path.join(LOCAL_PATH_OUTPUTS,"la_rochelle")
-OUTPUTS_VALENCIENNES = os.path.join(LOCAL_PATH_OUTPUTS,"valenciennes")
+# OUTPUTS_LAROCHELLE = os.path.join(LOCAL_PATH_OUTPUTS,"la_rochelle")
+# OUTPUTS_VALENCIENNES = os.path.join(LOCAL_PATH_OUTPUTS,"valenciennes")
+
+COMMUNITIES = {
+        "Valenciennes":{
+            "idx_of_local_authority":2,
+            "PATH":os.path.join(LOCAL_DATA_PATH,"la_rochelle.csv"),
+                        },
+
+        "La_Rochelle":{
+            "idx_of_local_authority":1,
+            "PATH":os.path.join(LOCAL_DATA_PATH,"valenciennes.csv"),
+                    }
+                }
 
 DEMARCHES = {
     "Demarches_PCAET_V1_pec_seq":"Extraction des Profils Energie Climat – Séquestration des démarches PCAET V1",

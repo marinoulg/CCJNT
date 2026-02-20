@@ -18,20 +18,19 @@ pip install -e .
 ```
 
 
-## STEP 1: Gather data
+## STEP 1: Gather data (manually for now)
 From [Teritoires Climats Ademe]("https://www.territoires-climat.ademe.fr/opendata#_blank), create your own csv as input data.
 
 
-## STEP 2: Run ```python method/methode_ecologiedatagouvfr.py```
-This command allows the user to create the consolidated community's csv, and the outputs (e.g. merged table for the Category for the community, and the diagram in .png format associated to this csv).
-
-## STEP 3: Create automatic PowerPoint presentations
-By running:
-```
-python pptx/presentation.py
-```
-the presentations will be downloaded in ```pptx/{community_name}/{community.pptx}```
-
+## STEP 2: Run ```make main``` in terminal
+This command will:
+- Clean data that you may have previously created in another run via the command ```python method/clean_data.py```
+- For the same reason, start from a clean slate in terms of outputs with the command ```rm -rf outputs/```
+- and finally run the command python ```main.py``` which, in a loop:
+  - creates a consolidated csv for each community,
+  - charges the csv in cache for each community,
+  - get the outputs for each community,
+  - generates the presentations for each community.
 
 ## Overview of the project's architecture
 ```
@@ -42,9 +41,10 @@ tree -L 1
 .
 ├── data
 │   ├── community.csv
-│   └── (...).csv
+│   └── Demarche_(...).csv
 ├── method
 │   ├── __init__.py
+│   ├── clean_data.py
 │   ├── methode_ecologiedatagouvfr.py
 │   └── params.py
 ├── notebooks
@@ -61,18 +61,18 @@ tree -L 1
 │       ├── Solaire_thermique
 │       ├── (...)
 │       └── Tertiaire
-├── pptx
+├── pptx_dir
 │   └── community
 │       └── community.pptx
 ├── README.md
 ├── requirements.txt
 ├── setup.py
+├── main.py
+├── Makefile
 └── tests
     └── test_merge_all.py
 ```
 ## To-do
-- Correct problem outputs
-- Correct where the .pptx presentations are saved
 - Quand on parle de "Diagnostic" dans merged, dire de quand date le diagnostic en le rajoutant en format subtext
 - Quand je rajoute le tableau à droite de chaque slide avec les infos, trier ces infos pour n'afficher que les relevant ones
 - Corriger les titres des slides, parfois c'est le nom du directory, parfois le titre du graphe --> homogénéiser
@@ -81,3 +81,5 @@ tree -L 1
 
 ## Done
 - Comprendre pourquoi parfois j'ai des images en doubles, mais avec un tableau à droite différent en plus (ou au moins, pas dans le même ordre)
+- Correct problem outputs - ça fonctionne dans le notebook
+- Correct where the .pptx presentations are saved

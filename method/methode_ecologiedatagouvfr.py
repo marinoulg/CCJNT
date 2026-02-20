@@ -3,7 +3,7 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 
-from method.params import LOCAL_DATA_PATH, LOCAL_PATH_OUTPUTS
+from method.params import LOCAL_DATA_PATH, LOCAL_PATH_OUTPUTS, COMMUNITIES
 
 pd.set_option('future.no_silent_downcasting', True)
 # ------------------- Main variables - lists/dicts --------------
@@ -99,16 +99,6 @@ possibilities = [
     "Autres_démarches",
     "PEC"
 ]
-
-communities = {
-        "Valenciennes":{
-            "idx_of_local_authority":2
-                        },
-
-        "La_Rochelle":{
-            "idx_of_local_authority":1
-                    }
-                }
 
 # ------------------- Context - broad Information ---------------
 """
@@ -781,10 +771,10 @@ def return_merged_df(larochelle,col,steps):
 def graph_col_between_steps_for_df(col, df, merged, steps=steps):
     fig, ax = plt.subplots()
 
-    LOCAL_OUTPUTS_TERRITORY = os.path.join(LOCAL_PATH_OUTPUTS, df.columns[0].lower())
+    LOCAL_OUTPUTS_TERRITORY = os.path.join(LOCAL_PATH_OUTPUTS, df.columns[0].lower().replace(" ", "_"))
     LOCAL_OUTPUTS_COL = os.path.join(LOCAL_OUTPUTS_TERRITORY, col)
-    print("LOCAL_OUTPUTS_COL:", LOCAL_OUTPUTS_COL)
-    print("LOCAL_OUTPUTS_TERRITORY:", LOCAL_OUTPUTS_TERRITORY)
+    # print("LOCAL_OUTPUTS_COL:", LOCAL_OUTPUTS_COL)
+    # print("LOCAL_OUTPUTS_TERRITORY:", LOCAL_OUTPUTS_TERRITORY)
 
     # Use os.makedirs to create all necessary parent directories
     os.makedirs(LOCAL_OUTPUTS_COL, exist_ok=True)
@@ -812,6 +802,49 @@ def graph_col_between_steps_for_df(col, df, merged, steps=steps):
 def get_outputs(df_community,
                 steps=steps,
                 print_=False):
+    """
+    PROBLEM HERE
+    quand j'appelle cette fonction dans le main, alors que le dossier ```outputs``` n'existe pas,
+    cela ne crée que partiellement le directory ```outputs/valenciennes```, et ne crée pas du tout
+    le directory ```outputs/la_rochelle```
+
+    --> ne crée pas tous les outputs pour Valenciennes,
+    et AUCUN pour La Rochelle
+
+    plus étrange encore :
+
+    POUR VALENCIENNES :
+    si je run
+    ```
+            valenciennes = pd.read_csv(os.path.join(LOCAL_DATA_PATH,"valenciennes.csv"), sep=";")\
+            .rename(columns={"Unnamed: 0":"index"}).set_index("index")
+
+            get_outputs(
+            valenciennes,
+            steps
+        )
+    ```
+
+    dans un notebook ET que le directory ```outputs/valenciennes``` existe (partiellement)
+    alors : cela n'ajoute pas mes subcategories manquantes
+
+    MAIS : si je supprime le directory ```outputs/valenciennes```,
+    alors : ça crée TOUTES mes subcategories
+
+    POUR LA ROCHELLE :
+    si je run
+    ```
+            larochelle = pd.read_csv(os.path.join(LOCAL_DATA_PATH,"la_rochelle.csv"), sep=";")\
+            .rename(columns={"Unnamed: 0":"index"}).set_index("index")
+
+            get_outputs(
+            larochelle,
+            steps
+        )
+    ```
+    alors : ça crée TOUTES mes subcategories sans aucun problème
+
+    """
     for col in df_community.columns.tolist()[5:]:
         try:
             if print_: print(col, end=":")
@@ -826,18 +859,20 @@ def get_outputs(df_community,
         except ValueError:
             next
 
+
+
 # ---------------------- if__name=="__main__" -------------------
 if __name__ == "__main__":
     # Create consolidated csv for each community
-    for community in communities:
+    for community in COMMUNITIES:
         community_df = merge_all(local_authority_name=community,
                 nb_of_lines=2,
-                idx_of_local_authority=communities[community]["idx_of_local_authority"])
-        community_df.to_csv(path_or_buf=os.path.join(LOCAL_DATA_PATH,f"{community}.csv"), sep=';')
+                idx_of_local_authority=COMMUNITIES[community]["idx_of_local_authority"])
+        community_df.to_csv(path_or_buf=os.path.join(LOCAL_DATA_PATH,f"{community.lower()}.csv"), sep=';')
         print(f"{community} csv done.")
 
         # Get outputs
-        get_outputs(community_df, steps=steps,
-                    # print_=True
-                    )
-        print(f"Ouputs created for {community}.")
+        # get_outputs(community_df, steps=steps,
+        #             # print_=True
+        #             )
+        # print(f"Ouputs created for {community}.")
