@@ -3,7 +3,7 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 
-from method.params import LOCAL_DATA_PATH, LOCAL_PATH_OUTPUTS, COMMUNITIES
+from method.params import *
 
 pd.set_option('future.no_silent_downcasting', True)
 # ------------------- Main variables - lists/dicts --------------
@@ -109,13 +109,19 @@ description…
 
 # ---------------------- Generic functions ----------------------
 def load_data(csv="PCAET_V2_PEC_SEQ.csv",
-              nb_of_lines=2,
-              idx_of_local_authority=1,
+              nb_of_lines=None,
+              idx_of_local_authority=None,
               local_authority_name = "La_Rochelle"):
 
-    csv_path = os.path.join(LOCAL_DATA_PATH,csv)
-    df = pd.read_csv(csv_path, sep=";").iloc[:nb_of_lines,:]
-    larochelle = df.iloc[idx_of_local_authority-1:idx_of_local_authority,:].T.rename(columns={idx_of_local_authority-1:f"{local_authority_name}"})
+    csv_path = os.path.join(PCAET_V2_DATA,csv)
+    if nb_of_lines:
+        df = pd.read_csv(csv_path, sep=";").iloc[:nb_of_lines,:]
+        if idx_of_local_authority:
+            larochelle = df.iloc[idx_of_local_authority-1:idx_of_local_authority,:].T.rename(columns={idx_of_local_authority-1:f"{local_authority_name}"})
+    else:
+        csv_path = os.path.join(PATH_DATA_WIP,csv)
+        larochelle = pd.read_csv(csv_path, sep=";")
+
     return larochelle
 
 def about_secteur(secteur):
@@ -678,29 +684,42 @@ def merge_all(local_authority_name="La_Rochelle",
             idx_of_local_authority=1,
             ):
 
+    """
+    à corriger : choix des csv encore fait à la mano
+    """
+
     # PEC SEQ
-    larochelle_pec_seq = load_data(csv="Demarches_PCAET_V2_PEC_SEQ.csv",
+    larochelle_pec_seq = load_data(csv="PCAET_V2_pec_seq.csv",
           nb_of_lines=nb_of_lines,
           idx_of_local_authority=idx_of_local_authority,
           local_authority_name=local_authority_name)
     larochelle_pec_seq = new_mapping(larochelle_pec_seq)
 
     # Demarches_PCAET_V2_ENR
-    larochelle_enr = load_data("Demarches_PCAET_V2_enr.csv",
+    larochelle_enr = load_data("PCAET_V2_enr.csv",
                             nb_of_lines=nb_of_lines,
                             idx_of_local_authority=idx_of_local_authority,
                             local_authority_name=local_authority_name)
     larochelle_enr = new_mapping_ENR(larochelle_enr)
 
     # Demarches_PCAET_V2_Polluant
-    larochelle_pol = load_data("Demarches_PCAET_V2_Polluant.csv",
+    larochelle_pol = load_data("PCAET_V2_polluant.csv",
                             nb_of_lines=nb_of_lines,
                             idx_of_local_authority=idx_of_local_authority,
                             local_authority_name=local_authority_name)
     larochelle_pol = new_mapping_POL(larochelle_pol)
 
+    # Demarches_PCAET_V2_entete
+    # larochelle_entete = load_data("PCAET_V2_entete.csv",
+    #                         nb_of_lines=nb_of_lines,
+    #                         idx_of_local_authority=idx_of_local_authority,
+    #                         local_authority_name=local_authority_name)
+    # larochelle_entete = new_mapping_POL(larochelle_entete) # need a new mapping here
+
     # Merge all
-    larochelle = pd.concat([larochelle_pec_seq,larochelle_enr, larochelle_pol])
+    larochelle = pd.concat([larochelle_pec_seq,larochelle_enr, larochelle_pol,
+                            # larochelle_entete
+                            ])
     return larochelle
 
 # --------------------------- GRAPH -----------------------------
@@ -802,49 +821,6 @@ def graph_col_between_steps_for_df(col, df, merged, steps=steps):
 def get_outputs(df_community,
                 steps=steps,
                 print_=False):
-    """
-    PROBLEM HERE
-    quand j'appelle cette fonction dans le main, alors que le dossier ```outputs``` n'existe pas,
-    cela ne crée que partiellement le directory ```outputs/valenciennes```, et ne crée pas du tout
-    le directory ```outputs/la_rochelle```
-
-    --> ne crée pas tous les outputs pour Valenciennes,
-    et AUCUN pour La Rochelle
-
-    plus étrange encore :
-
-    POUR VALENCIENNES :
-    si je run
-    ```
-            valenciennes = pd.read_csv(os.path.join(LOCAL_DATA_PATH,"valenciennes.csv"), sep=";")\
-            .rename(columns={"Unnamed: 0":"index"}).set_index("index")
-
-            get_outputs(
-            valenciennes,
-            steps
-        )
-    ```
-
-    dans un notebook ET que le directory ```outputs/valenciennes``` existe (partiellement)
-    alors : cela n'ajoute pas mes subcategories manquantes
-
-    MAIS : si je supprime le directory ```outputs/valenciennes```,
-    alors : ça crée TOUTES mes subcategories
-
-    POUR LA ROCHELLE :
-    si je run
-    ```
-            larochelle = pd.read_csv(os.path.join(LOCAL_DATA_PATH,"la_rochelle.csv"), sep=";")\
-            .rename(columns={"Unnamed: 0":"index"}).set_index("index")
-
-            get_outputs(
-            larochelle,
-            steps
-        )
-    ```
-    alors : ça crée TOUTES mes subcategories sans aucun problème
-
-    """
     for col in df_community.columns.tolist()[5:]:
         try:
             if print_: print(col, end=":")
@@ -863,6 +839,7 @@ def get_outputs(df_community,
 
 # ---------------------- if__name=="__main__" -------------------
 if __name__ == "__main__":
+
     # Create consolidated csv for each community
     for community in COMMUNITIES:
         community_df = merge_all(local_authority_name=community,
@@ -870,9 +847,3 @@ if __name__ == "__main__":
                 idx_of_local_authority=COMMUNITIES[community]["idx_of_local_authority"])
         community_df.to_csv(path_or_buf=os.path.join(LOCAL_DATA_PATH,f"{community.lower()}.csv"), sep=';')
         print(f"{community} csv done.")
-
-        # Get outputs
-        # get_outputs(community_df, steps=steps,
-        #             # print_=True
-        #             )
-        # print(f"Ouputs created for {community}.")
