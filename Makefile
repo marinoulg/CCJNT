@@ -7,8 +7,8 @@ make install:
 	@pip install -e .
 
 make main:
-	@make install
+# 	@make install
 	@make preprocess
-	@python method/clean_data.py
+# 	@python method/clean_data.py
 	@rm -rf outputs/
 	@python main.py
