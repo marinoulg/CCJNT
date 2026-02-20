@@ -108,7 +108,7 @@ description…
 """
 
 # ---------------------- Generic functions ----------------------
-def load_data(csv="Demarches_PCAET_V2_PEC_SEQ.csv",
+def load_data(csv="PCAET_V2_PEC_SEQ.csv",
               nb_of_lines=2,
               idx_of_local_authority=1,
               local_authority_name = "La_Rochelle"):

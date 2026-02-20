@@ -20,19 +20,25 @@ LOCAL_PATH_REPO = os.path.join(os.path.expanduser('~'),"code", GITHUB_NAME,"couc
 LOCAL_DATA_PATH = os.path.join(LOCAL_PATH_REPO,"data")
 LOCAL_PATH_OUTPUTS = os.path.join(LOCAL_PATH_REPO,"outputs")
 
-# OUTPUTS_LAROCHELLE = os.path.join(LOCAL_PATH_OUTPUTS,"la_rochelle")
-# OUTPUTS_VALENCIENNES = os.path.join(LOCAL_PATH_OUTPUTS,"valenciennes")
+PCAET_DIR = os.path.join(LOCAL_DATA_PATH,"PCAETs")
+PCAET_DATA = os.path.join(PCAET_DIR,"data")
+PCAET_V1_DATA = os.path.join(PCAET_DATA,"PCAET_V1")
+PCAET_V2_DATA = os.path.join(PCAET_DATA,"PCAET_V2")
+
+COMMUNITIES_WIP = [
+    "La Rochelle",
+    "Valenciennes",
+    ]
 
 COMMUNITIES = {
-        "Valenciennes":{
-            "idx_of_local_authority":2,
-            "PATH":os.path.join(LOCAL_DATA_PATH,"la_rochelle.csv"),
-                        },
-
         "La_Rochelle":{
             "idx_of_local_authority":1,
             "PATH":os.path.join(LOCAL_DATA_PATH,"valenciennes.csv"),
-                    }
+                    },
+        "Valenciennes":{
+            "idx_of_local_authority":2,
+            "PATH":os.path.join(LOCAL_DATA_PATH,"la_rochelle.csv"),
+                        }
                 }
 
 DEMARCHES = {
