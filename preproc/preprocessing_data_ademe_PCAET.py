@@ -70,7 +70,9 @@ def save_csv(data_path,
                                                              data_path=data_path)
 
     # Save csv to WIP directory
-    df.to_csv(os.path.join(PCAET_DIR,"WIP",f"{data_path.split("/")[-1]}"))
+    df.to_csv(os.path.join(PCAET_DIR,"WIP",f"{data_path.split("/")[-1]}"),
+              sep=";",
+              index=False)
 
 def save_all_csvs(which_version_of_PCAET_DATA=PCAET_V2_DATA,
                   communities=COMMUNITIES_WIP
