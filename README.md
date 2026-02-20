@@ -34,9 +34,9 @@ This command will:
 
 ## Overview of the project's architecture
 ```
-tree # this is indicative of how the package is structured, as it might help others to understand it and how it works
+tree
 ```
-
+The following ```tree``` is indicative of how the package is structured, as it might help others understand it and how it works.
 ```
 .
 ├── data
