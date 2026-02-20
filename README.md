@@ -104,6 +104,7 @@ The following ```tree``` is indicative of how the package is structured, as it m
     └── test_merge_all.py
 ```
 ## To-do
+- Dans ```main.py```, not dynamic if I add a new community_name in ```params.py```
 - Dans ```merge_all``` dans ```method/methode_ecologiedatagouvfr.py``` : à corriger : choix des csv encore fait à la mano + manque le mapping des entete (si besoin?)
 - Quand on parle de "Diagnostic" dans merged, dire de quand date le diagnostic en le rajoutant en format subtext
 - Quand je rajoute le tableau à droite de chaque slide avec les infos, trier ces infos pour n'afficher que les relevant ones
