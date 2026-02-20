@@ -76,7 +76,7 @@ tree # this is indicative of how the package is structured, as it might help oth
 │   └── community
 │       ├── Agriculture
 │       │   ├── Agriculture between Diagnostic and 2050 for La Rochelle.png # this is an example
-│   │   │   └── merged_table_for_Agriculture_for_La Rochelle.csv # this is an example
+│       │   └── merged_table_for_Agriculture_for_La Rochelle.csv # this is an example
 │       ├── Chaleur(en GWh)
 │       ├── Consommation_ENR
 │       ├── Géothermie
