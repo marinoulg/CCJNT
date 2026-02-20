@@ -34,15 +34,16 @@ PATH_DATA_WIP = os.path.join(PCAET_DIR, "WIP")
 COMMUNITIES_WIP = [
     "La Rochelle",
     "Valenciennes",
+    "Paris"
     ]
 
 COMMUNITIES = {
         "La_Rochelle":{
-            "idx_of_local_authority":1,
+            # "idx_of_local_authority":1,
             "PATH":os.path.join(LOCAL_DATA_PATH,"valenciennes.csv"),
                     },
         "Valenciennes":{
-            "idx_of_local_authority":2,
+            # "idx_of_local_authority":2,
             "PATH":os.path.join(LOCAL_DATA_PATH,"la_rochelle.csv"),
                         }
                 }
