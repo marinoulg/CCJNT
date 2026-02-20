@@ -123,7 +123,9 @@ def create_df_for_information(merged, possibilities):
             df = pd.concat([df, df_new], axis=0)
     return df
 
-def main_presentation(community):
+def main_presentation(community,
+                      v1=False,
+                      v2=True):
     community = community.lower()
     ppt = Presentation()
     title = ppt.slide_layouts[0]
@@ -134,7 +136,11 @@ def main_presentation(community):
     heading = quelle_commune.split("/")[-1].replace("_", " ").title()
     title_page(ppt, title, heading, f"created by Marine on {date.today()}\n for Cerema - CCJNT")
 
-    df = pd.read_csv(os.path.join(LOCAL_DATA_PATH,"demarches_entetes_V2.csv"), sep=";", header=None).iloc[1:,1:].dropna(axis=0, how="all")
+    if v2:
+        df = pd.read_csv(os.path.join(DEMARCHES_PCAET_V2,"Demarches_PCAET_V2_entete.csv"), sep=";", header=None).iloc[1:,1:].dropna(axis=0, how="all")
+    if v1:
+        df = pd.read_csv(os.path.join(DEMARCHES_PCAET_V1,"Demarches_PCAET_V1_entete.csv"), sep=";", header=None).iloc[1:,1:].dropna(axis=0, how="all")
+
     for num_col, title_col in zip(df.columns.tolist(), df.iloc[0,:].values.tolist()):
         df.rename(columns={num_col:title_col}, inplace=True)
     df = df.drop(index=2).reset_index().drop(columns=["index"])
