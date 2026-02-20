@@ -75,7 +75,7 @@ tree # this is indicative of how the package is structured, as it might help oth
 ├── outputs
 │   └── community
 │       ├── Agriculture
-│   │   │   ├── Agriculture between Diagnostic and 2050 for La Rochelle.png # this is an example
+│       │   ├── Agriculture between Diagnostic and 2050 for La Rochelle.png # this is an example
 │   │   │   └── merged_table_for_Agriculture_for_La Rochelle.csv # this is an example
 │       ├── Chaleur(en GWh)
 │       ├── Consommation_ENR
@@ -109,9 +109,9 @@ tree # this is indicative of how the package is structured, as it might help oth
 - Quand je rajoute le tableau à droite de chaque slide avec les infos, trier ces infos pour n'afficher que les relevant ones
 - Corriger les titres des slides, parfois c'est le nom du directory, parfois le titre du graphe --> homogénéiser
 - Corriger problème avec image/diagram pour PM2.5
-- Comprendre pourquoi le lien de l'Ademe dans mon README.md n'apparaît pas
+- Comprendre pourquoi le lien de l'Ademe dans mon ```README.md``` n'apparaît pas
 
 ## Done
 - Comprendre pourquoi parfois j'ai des images en doubles, mais avec un tableau à droite différent en plus (ou au moins, pas dans le même ordre)
 - Correct problem outputs - ça fonctionne dans le notebook
-- Correct where the .pptx presentations are saved
+- Correct where the ```.pptx``` presentations are saved
