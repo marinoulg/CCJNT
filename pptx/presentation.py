@@ -165,6 +165,11 @@ if __name__ == "__main__":
                             heading=img_title,
                             # subheading_df=tmp_df
                             )
+                """
+                Comprendre pourquoi parfois j'ai des images en doubles,
+                mais avec un tableau à droite différent en plus
+                (ou au moins, pas dans le même ordre)
+                """
 
             if file.endswith(".csv"):
                 merged = pd.read_csv(os.path.join(quelle_commune, directory, file), sep=";").set_index("Categories")
@@ -179,6 +184,11 @@ if __name__ == "__main__":
                             heading=[img_title if img_path is not None else directory][0],
                             subheading_df=tmp_df,
                             )
+                """
+                Quand on parle de "Diagnostic" dans merged,
+                dire de quand date le diagnostic en le rajoutant
+                en format subtext
+                """
         slide += 1  # Increment slide only once per file
         print()
 

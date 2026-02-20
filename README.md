@@ -70,3 +70,13 @@ tree -L 1
 └── tests
     └── test_merge_all.py
 ```
+## To-do
+- Correct problem outputs
+- Correct where the .pptx presentations are saved
+- Quand on parle de "Diagnostic" dans merged, dire de quand date le diagnostic en le rajoutant en format subtext
+- Quand je rajoute le tableau à droite de chaque slide avec les infos, trier ces infos pour n'afficher que les relevant ones
+- Corriger les titres des slides, parfois c'est le nom du directory, parfois le titre du graphe --> homogénéiser
+- Corriger problème avec image/diagram pour PM2.5
+
+## Done
+- Comprendre pourquoi parfois j'ai des images en doubles, mais avec un tableau à droite différent en plus (ou au moins, pas dans le même ordre)
