@@ -2,7 +2,9 @@ from method.methode_ecologiedatagouvfr import *
 from pptx_dir.presentation import main_presentation
 print(COMMUNITIES)
 
-def main(communities):
+def main(communities,
+         v1=False,
+         v2=True):
     # Create consolidated csv for each community
     for community in communities:
         community_df = merge_all(local_authority_name=community,
@@ -24,7 +26,7 @@ def main(communities):
         print(f"Ouputs created for {community_df.columns[0]}.")
 
         # Create presentation in pptx format
-        main_presentation(community_df.columns[0].lower())
+        main_presentation(community_df.columns[0].lower(),v1=v1, v2=v2)
 
 if __name__ == "__main__":
     main(COMMUNITIES)
