@@ -165,11 +165,6 @@ if __name__ == "__main__":
                             heading=img_title,
                             # subheading_df=tmp_df
                             )
-                """
-                Comprendre pourquoi parfois j'ai des images en doubles,
-                mais avec un tableau à droite différent en plus
-                (ou au moins, pas dans le même ordre)
-                """
 
             if file.endswith(".csv"):
                 merged = pd.read_csv(os.path.join(quelle_commune, directory, file), sep=";").set_index("Categories")
