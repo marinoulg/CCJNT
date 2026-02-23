@@ -34,7 +34,7 @@ PATH_DATA_WIP = os.path.join(PCAET_DIR, "WIP")
 COMMUNITIES_WIP = [
     "La Rochelle",
     "Valenciennes",
-    # "Paris"
+    "Paris"
     ]
 
 COMMUNITIES = {

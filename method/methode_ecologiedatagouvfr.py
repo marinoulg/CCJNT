@@ -108,21 +108,50 @@ description…
 """
 
 # ---------------------- Generic functions ----------------------
-def load_data(csv="PCAET_V2_PEC_SEQ.csv",
-              nb_of_lines=None,
-              idx_of_local_authority=None,
-              local_authority_name = "La_Rochelle"):
+
+# outdated
+# def load_data(csv="PCAET_V2_pec_seq.csv",
+#               nb_of_lines=None,
+#               idx_of_local_authority=None,
+#               local_authority_name = "La_Rochelle"):
+
+#     csv_path = os.path.join(PCAET_V2_DATA,csv)
+#     if nb_of_lines:
+#         df = pd.read_csv(csv_path, sep=";").iloc[:nb_of_lines,:]
+#         if idx_of_local_authority:
+#             larochelle = df.iloc[idx_of_local_authority-1:idx_of_local_authority,:].T.rename(columns={idx_of_local_authority-1:f"{local_authority_name}"})
+#     else:
+#         larochelle = pd.read_csv(csv_path, sep=";")
+
+#     return larochelle
+
+
+def load_data_per_community(local_authority_name,
+                            csv="PCAET_V2_pec_seq.csv"):
 
     csv_path = os.path.join(PCAET_V2_DATA,csv)
-    if nb_of_lines:
-        df = pd.read_csv(csv_path, sep=";").iloc[:nb_of_lines,:]
-        if idx_of_local_authority:
-            larochelle = df.iloc[idx_of_local_authority-1:idx_of_local_authority,:].T.rename(columns={idx_of_local_authority-1:f"{local_authority_name}"})
-    else:
-        csv_path = os.path.join(PATH_DATA_WIP,csv)
-        larochelle = pd.read_csv(csv_path, sep=";")
+    df = pd.read_csv(csv_path, sep=";")
 
-    return larochelle
+    cols_of_interest = [
+        "Description_rapide",
+        "Collectivités porteuses",
+        "Elu_referent",
+        "Commentaire_statut",
+    ]
+
+    to_keep = set()
+    for col in cols_of_interest:
+        for idx in df.index:
+            try:
+                if local_authority_name in df.loc[idx,col]:
+                    to_keep.add(idx)
+            except TypeError:
+                next
+
+    to_keep_dict = {local_authority_name:list(to_keep)}
+    # print(to_keep_dict)
+
+    return pd.DataFrame(df.loc[to_keep_dict[local_authority_name]]).T
 
 def about_secteur(secteur):
     """
@@ -173,10 +202,12 @@ def about_periode(periode):
 def for_specific_year_or_sector(tofind, larochelle):
     _2026 = []
     for i,elem in enumerate(larochelle.index):
-        if tofind in elem:
-            _2026.append(larochelle.iloc[i,:1].values[0])
-        else:
-            _2026.append(False)
+        try:
+            if tofind in elem:
+                _2026.append(larochelle.iloc[i,:1].values[0])
+            else: _2026.append(False)
+        except IndexError:
+                _2026.append(False)
 
     return _2026
 
@@ -298,20 +329,24 @@ def new_mapping(larochelle):
     seq = []
 
     for i, elem in enumerate(larochelle.index):
-        if "PEC_GES" in elem:
-            try:
-                new_mapps = interm_new_mapping(elem, new_mapps, pec__ges= True)
-            except TypeError:
-                next
-        if elem.startswith("PEC_GES"):
-            pecges.append(larochelle.iloc[i,:1].values[0])
-        else: pecges.append(False)
+        try:
+            if "PEC_GES" in elem:
+                    new_mapps = interm_new_mapping(elem, new_mapps, pec__ges= True)
+            if elem.startswith("PEC_GES"):
+                pecges.append(larochelle.iloc[i,:1].values[0])
+            else: pecges.append(False)
+        except TypeError: pecges.append(False)
+        except IndexError: pecges.append(False)
 
-        if "PEC_CONSO" in elem:
-            new_mapps = interm_new_mapping(elem, new_mapps, pec__conso=True)
-        if elem.startswith("PEC_CONSO"):
-            pecconso.append(larochelle.iloc[i,:1].values[0])
-        else: pecconso.append(False)
+
+        try:
+            if "PEC_CONSO" in elem:
+                new_mapps = interm_new_mapping(elem, new_mapps, pec__conso=True)
+            if elem.startswith("PEC_CONSO"):
+                pecconso.append(larochelle.iloc[i,:1].values[0])
+            else: pecconso.append(False)
+        except TypeError: pecconso.append(False)
+        except IndexError: pecconso.append(False)
 
         try:
             if "SEQ" in elem:
@@ -320,8 +355,9 @@ def new_mapping(larochelle):
             if elem.startswith("SEQ"):
                 seq.append(larochelle.iloc[i,:1].values[0])
             else: seq.append(False)
-        except TypeError:
-            seq.append(False)
+        except TypeError: seq.append(False)
+        except IndexError: seq.append(False)
+
 
     mapping_index = [new_mapps.get(element, element) for element in list(larochelle.index)]
     larochelle.index = mapping_index
@@ -680,8 +716,8 @@ def new_mapping_POL(larochelle):
 # --------------------------- MERGE ALL -------------------------
 
 def merge_all(local_authority_name="La_Rochelle",
-            nb_of_lines=2,
-            idx_of_local_authority=1,
+            # nb_of_lines=2,
+            # idx_of_local_authority=1,
             ):
 
     """
@@ -689,23 +725,23 @@ def merge_all(local_authority_name="La_Rochelle",
     """
 
     # PEC SEQ
-    larochelle_pec_seq = load_data(csv="PCAET_V2_pec_seq.csv",
-          nb_of_lines=nb_of_lines,
-          idx_of_local_authority=idx_of_local_authority,
+    larochelle_pec_seq = load_data_per_community(csv="PCAET_V2_pec_seq.csv",
+        #   nb_of_lines=nb_of_lines,
+        #   idx_of_local_authority=idx_of_local_authority,
           local_authority_name=local_authority_name)
     larochelle_pec_seq = new_mapping(larochelle_pec_seq)
 
     # Demarches_PCAET_V2_ENR
-    larochelle_enr = load_data("PCAET_V2_enr.csv",
-                            nb_of_lines=nb_of_lines,
-                            idx_of_local_authority=idx_of_local_authority,
+    larochelle_enr = load_data_per_community(csv="PCAET_V2_enr.csv",
+                            # nb_of_lines=nb_of_lines,
+                            # idx_of_local_authority=idx_of_local_authority,
                             local_authority_name=local_authority_name)
     larochelle_enr = new_mapping_ENR(larochelle_enr)
 
     # Demarches_PCAET_V2_Polluant
-    larochelle_pol = load_data("PCAET_V2_polluant.csv",
-                            nb_of_lines=nb_of_lines,
-                            idx_of_local_authority=idx_of_local_authority,
+    larochelle_pol = load_data_per_community(csv="PCAET_V2_polluant.csv",
+                            # nb_of_lines=nb_of_lines,
+                            # idx_of_local_authority=idx_of_local_authority,
                             local_authority_name=local_authority_name)
     larochelle_pol = new_mapping_POL(larochelle_pol)
 
@@ -842,6 +878,7 @@ if __name__ == "__main__":
 
     # Create consolidated csv for each community
     for community in COMMUNITIES:
+        print("Create consolidated csv for each community.")
         community_df = merge_all(local_authority_name=community,
                 nb_of_lines=2,
                 idx_of_local_authority=COMMUNITIES[community]["idx_of_local_authority"])

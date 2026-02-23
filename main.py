@@ -1,6 +1,5 @@
 from method.methode_ecologiedatagouvfr import *
 from pptx_dir.presentation import main_presentation
-print(COMMUNITIES)
 
 # def main(communities,
 #     # communities_WIP,
@@ -44,10 +43,6 @@ print(COMMUNITIES)
 
 # if __name__ == "__main__":
 #     main(communities=COMMUNITIES,v2=True)
-
-# from method.methode_ecologiedatagouvfr import *
-# from pptx_dir.presentation import main_presentation
-# print(COMMUNITIES)
 
 
 # ---------------- what i had before ----------------
