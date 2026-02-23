@@ -109,49 +109,23 @@ description…
 
 # ---------------------- Generic functions ----------------------
 
-# outdated
-# def load_data(csv="PCAET_V2_pec_seq.csv",
-#               nb_of_lines=None,
-#               idx_of_local_authority=None,
-#               local_authority_name = "La_Rochelle"):
-
-#     csv_path = os.path.join(PCAET_V2_DATA,csv)
-#     if nb_of_lines:
-#         df = pd.read_csv(csv_path, sep=";").iloc[:nb_of_lines,:]
-#         if idx_of_local_authority:
-#             larochelle = df.iloc[idx_of_local_authority-1:idx_of_local_authority,:].T.rename(columns={idx_of_local_authority-1:f"{local_authority_name}"})
-#     else:
-#         larochelle = pd.read_csv(csv_path, sep=";")
-
-#     return larochelle
-
-
-def load_data_per_community(local_authority_name,
-                            csv="PCAET_V2_pec_seq.csv"):
-
-    csv_path = os.path.join(PCAET_V2_DATA,csv)
+def load_data_per_community(csv="PCAET_V2_pec_seq.csv", local_authority_name="La Rochelle"):
+    csv_path = os.path.join(PCAET_V2_DATA, csv)
     df = pd.read_csv(csv_path, sep=";")
 
-    cols_of_interest = [
-        "Description_rapide",
-        "Collectivités porteuses",
-        "Elu_referent",
-        "Commentaire_statut",
-    ]
+    # Filtrer par nom de collectivité (recherche partielle pour éviter les erreurs de casse ou de formulation)
+    filtered_df = df[df["Nom"].str.contains(local_authority_name, case=False, na=False)]
 
-    to_keep = set()
-    for col in cols_of_interest:
-        for idx in df.index:
-            try:
-                if local_authority_name in df.loc[idx,col]:
-                    to_keep.add(idx)
-            except TypeError:
-                next
+    if filtered_df.empty:
+        print(f"Aucune donnée trouvée pour '{local_authority_name}' dans {csv}.")
+        return pd.DataFrame()  # Retourne un DataFrame vide
+    elif filtered_df.shape[0] > 1:
+        print(f"Plusieurs correspondances pour '{local_authority_name}' dans {csv} : {filtered_df['Nom'].tolist()}")
+        # Garder la première correspondance (ou toutes, selon votre besoin)
+        return filtered_df.iloc[0:1].T.rename(columns={0: local_authority_name})
+    else:
+        return filtered_df.iloc[0:1].T.rename(columns={0: local_authority_name})
 
-    to_keep_dict = {local_authority_name:list(to_keep)}
-    # print(to_keep_dict)
-
-    return pd.DataFrame(df.loc[to_keep_dict[local_authority_name]]).T
 
 def about_secteur(secteur):
     """
@@ -723,32 +697,38 @@ def new_mapping_POL(larochelle):
 
 def merge_all(local_authority_name="La_Rochelle"):
     # PEC SEQ
-    larochelle_pec_seq = load_data_per_community(csv="PCAET_V2_pec_seq.csv", local_authority_name=local_authority_name)
-    if not larochelle_pec_seq.empty:  # Vérification
+    larochelle_pec_seq = load_data_per_community(csv="PCAET_V2_pec_seq.csv",
+                                                 local_authority_name=local_authority_name)
+    if not larochelle_pec_seq.empty:
         larochelle_pec_seq = new_mapping(larochelle_pec_seq)
     else:
-        print(f"Aucune donnée trouvée pour {local_authority_name} dans PEC_SEQ.")
-        larochelle_pec_seq = pd.DataFrame()  # Retourne un DataFrame vide
+        print(f"Aucune donnée PEC_SEQ pour {local_authority_name}.")
 
     # ENR
-    larochelle_enr = load_data_per_community(csv="PCAET_V2_enr.csv", local_authority_name=local_authority_name)
+    larochelle_enr = load_data_per_community(csv="PCAET_V2_enr.csv",
+                                             local_authority_name=local_authority_name)
     if not larochelle_enr.empty:
         larochelle_enr = new_mapping_ENR(larochelle_enr)
     else:
-        print(f"Aucune donnée trouvée pour {local_authority_name} dans ENR.")
-        larochelle_enr = pd.DataFrame()
+        print(f"Aucune donnée ENR pour {local_authority_name}.")
 
     # Polluant
-    larochelle_pol = load_data_per_community(csv="PCAET_V2_polluant.csv", local_authority_name=local_authority_name)
+    larochelle_pol = load_data_per_community(csv="PCAET_V2_polluant.csv",
+                                             local_authority_name=local_authority_name)
     if not larochelle_pol.empty:
         larochelle_pol = new_mapping_POL(larochelle_pol)
     else:
-        print(f"Aucune donnée trouvée pour {local_authority_name} dans POLLUANT.")
-        larochelle_pol = pd.DataFrame()
+        print(f"Aucune donnée POLLUANT pour {local_authority_name}.")
 
-    # Concatenation
-    larochelle = pd.concat([larochelle_pec_seq, larochelle_enr, larochelle_pol])
-    return larochelle
+    # Concatenation (seulement si les DataFrames ne sont pas vides)
+    dfs_to_concat = [df for df in [larochelle_pec_seq, larochelle_enr, larochelle_pol] if not df.empty]
+    if not dfs_to_concat:
+        print(f"Aucune donnée disponible pour {local_authority_name}.")
+        return pd.DataFrame()
+    else:
+        larochelle = pd.concat(dfs_to_concat)
+        return larochelle
+
 
 
 # --------------------------- GRAPH -----------------------------
@@ -875,5 +855,8 @@ if __name__ == "__main__":
         community_df = merge_all(local_authority_name=community,
                 nb_of_lines=2,
                 idx_of_local_authority=COMMUNITIES[community]["idx_of_local_authority"])
-        community_df.to_csv(path_or_buf=os.path.join(LOCAL_DATA_PATH,f"{community.lower()}.csv"), sep=';')
-        print(f"{community} csv done.")
+        if not community_df.empty:
+            community_df.to_csv(path_or_buf=os.path.join(LOCAL_DATA_PATH,f"{community.lower()}.csv"), sep=';')
+            print(f"Fichier {community} généré avec succès.")
+        else:
+            print(f"Aucune donnée valide pour {community_df}.")
