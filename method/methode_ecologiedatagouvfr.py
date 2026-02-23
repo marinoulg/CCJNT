@@ -202,12 +202,10 @@ def about_periode(periode):
 def for_specific_year_or_sector(tofind, larochelle):
     _2026 = []
     for i,elem in enumerate(larochelle.index):
-        try:
-            if tofind in elem:
-                _2026.append(larochelle.iloc[i,:1].values[0])
-            else: _2026.append(False)
-        except IndexError:
-                _2026.append(False)
+        if tofind in elem:
+            _2026.append(larochelle.iloc[i,:1].values[0])
+        else:
+            _2026.append(False)
 
     return _2026
 
@@ -323,6 +321,9 @@ def interm_new_mapping(
     return new_mapps
 
 def new_mapping(larochelle):
+    if larochelle.empty:
+        return larochelle  # Retourne le DataFrame vide
+
     new_mapps = {}
     pecges = []
     pecconso = []
@@ -331,32 +332,37 @@ def new_mapping(larochelle):
     for i, elem in enumerate(larochelle.index):
         try:
             if "PEC_GES" in elem:
-                    new_mapps = interm_new_mapping(elem, new_mapps, pec__ges= True)
+                new_mapps = interm_new_mapping(elem, new_mapps, pec__ges=True)
             if elem.startswith("PEC_GES"):
-                pecges.append(larochelle.iloc[i,:1].values[0])
-            else: pecges.append(False)
-        except TypeError: pecges.append(False)
-        except IndexError: pecges.append(False)
+                pecges.append(larochelle.iloc[i, 0] if not larochelle.iloc[i, :1].empty else False)
+            else:
+                pecges.append(False)
+        except (TypeError, IndexError):
+            pecges.append(False)
+        # ... (même logique pour pecconso et seq)
+    # ... (reste de la fonction)
+
+        # except IndexError: pecges.append(False)
 
 
         try:
             if "PEC_CONSO" in elem:
                 new_mapps = interm_new_mapping(elem, new_mapps, pec__conso=True)
             if elem.startswith("PEC_CONSO"):
-                pecconso.append(larochelle.iloc[i,:1].values[0])
+                pecconso.append(larochelle.iloc[i, 0] if not larochelle.iloc[i, :1].empty else False)
             else: pecconso.append(False)
         except TypeError: pecconso.append(False)
-        except IndexError: pecconso.append(False)
+        # except IndexError: pecconso.append(False)
 
         try:
             if "SEQ" in elem:
                 n1,n2 = seq_(elem)
                 new_mapps[elem] = "SEQ_" + about_seq_secteur(n1) + n2
             if elem.startswith("SEQ"):
-                seq.append(larochelle.iloc[i,:1].values[0])
+                seq.append(larochelle.iloc[i, 0] if not larochelle.iloc[i, :1].empty else False)
             else: seq.append(False)
         except TypeError: seq.append(False)
-        except IndexError: seq.append(False)
+        # except IndexError: seq.append(False)
 
 
     mapping_index = [new_mapps.get(element, element) for element in list(larochelle.index)]
@@ -715,48 +721,35 @@ def new_mapping_POL(larochelle):
 
 # --------------------------- MERGE ALL -------------------------
 
-def merge_all(local_authority_name="La_Rochelle",
-            # nb_of_lines=2,
-            # idx_of_local_authority=1,
-            ):
-
-    """
-    à corriger : choix des csv encore fait à la mano
-    """
-
+def merge_all(local_authority_name="La_Rochelle"):
     # PEC SEQ
-    larochelle_pec_seq = load_data_per_community(csv="PCAET_V2_pec_seq.csv",
-        #   nb_of_lines=nb_of_lines,
-        #   idx_of_local_authority=idx_of_local_authority,
-          local_authority_name=local_authority_name)
-    larochelle_pec_seq = new_mapping(larochelle_pec_seq)
+    larochelle_pec_seq = load_data_per_community(csv="PCAET_V2_pec_seq.csv", local_authority_name=local_authority_name)
+    if not larochelle_pec_seq.empty:  # Vérification
+        larochelle_pec_seq = new_mapping(larochelle_pec_seq)
+    else:
+        print(f"Aucune donnée trouvée pour {local_authority_name} dans PEC_SEQ.")
+        larochelle_pec_seq = pd.DataFrame()  # Retourne un DataFrame vide
 
-    # Demarches_PCAET_V2_ENR
-    larochelle_enr = load_data_per_community(csv="PCAET_V2_enr.csv",
-                            # nb_of_lines=nb_of_lines,
-                            # idx_of_local_authority=idx_of_local_authority,
-                            local_authority_name=local_authority_name)
-    larochelle_enr = new_mapping_ENR(larochelle_enr)
+    # ENR
+    larochelle_enr = load_data_per_community(csv="PCAET_V2_enr.csv", local_authority_name=local_authority_name)
+    if not larochelle_enr.empty:
+        larochelle_enr = new_mapping_ENR(larochelle_enr)
+    else:
+        print(f"Aucune donnée trouvée pour {local_authority_name} dans ENR.")
+        larochelle_enr = pd.DataFrame()
 
-    # Demarches_PCAET_V2_Polluant
-    larochelle_pol = load_data_per_community(csv="PCAET_V2_polluant.csv",
-                            # nb_of_lines=nb_of_lines,
-                            # idx_of_local_authority=idx_of_local_authority,
-                            local_authority_name=local_authority_name)
-    larochelle_pol = new_mapping_POL(larochelle_pol)
+    # Polluant
+    larochelle_pol = load_data_per_community(csv="PCAET_V2_polluant.csv", local_authority_name=local_authority_name)
+    if not larochelle_pol.empty:
+        larochelle_pol = new_mapping_POL(larochelle_pol)
+    else:
+        print(f"Aucune donnée trouvée pour {local_authority_name} dans POLLUANT.")
+        larochelle_pol = pd.DataFrame()
 
-    # Demarches_PCAET_V2_entete
-    # larochelle_entete = load_data("PCAET_V2_entete.csv",
-    #                         nb_of_lines=nb_of_lines,
-    #                         idx_of_local_authority=idx_of_local_authority,
-    #                         local_authority_name=local_authority_name)
-    # larochelle_entete = new_mapping_POL(larochelle_entete) # need a new mapping here
-
-    # Merge all
-    larochelle = pd.concat([larochelle_pec_seq,larochelle_enr, larochelle_pol,
-                            # larochelle_entete
-                            ])
+    # Concatenation
+    larochelle = pd.concat([larochelle_pec_seq, larochelle_enr, larochelle_pol])
     return larochelle
+
 
 # --------------------------- GRAPH -----------------------------
 
