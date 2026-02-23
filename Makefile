@@ -9,6 +9,5 @@ make install:
 make main:
 # 	@make install
 	@make preprocess
-# 	@python method/clean_data.py
 	@rm -rf outputs/
 	@python main.py

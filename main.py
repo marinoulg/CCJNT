@@ -57,8 +57,9 @@ def main(communities,
     # Create consolidated csv for each community
     for community in communities:
         community_df = merge_all(local_authority_name=community,
-                nb_of_lines=2,
-                idx_of_local_authority=communities[community]["idx_of_local_authority"])
+                # nb_of_lines=2,
+                # idx_of_local_authority=communities[community]["idx_of_local_authority"]
+                )
         community_df.to_csv(path_or_buf=os.path.join(LOCAL_DATA_PATH,f"{community.lower()}.csv"), sep=';')
         print(f"{community} csv done.")
 
